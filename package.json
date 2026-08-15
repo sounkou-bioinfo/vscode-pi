@@ -1,0 +1,141 @@
+{
+  "name": "vscode-pi",
+  "displayName": "Pi",
+  "description": "A native VS Code frontend for the Pi coding agent.",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "publisher": "sounkou-bioinfo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sounkou-bioinfo/vscode-pi.git"
+  },
+  "homepage": "https://github.com/sounkou-bioinfo/vscode-pi#readme",
+  "bugs": {
+    "url": "https://github.com/sounkou-bioinfo/vscode-pi/issues"
+  },
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "keywords": [
+    "pi",
+    "coding-agent",
+    "agent",
+    "remote-ssh"
+  ],
+  "main": "./dist/extension.js",
+  "extensionKind": [
+    "workspace"
+  ],
+  "activationEvents": [
+    "onView:vscodePi.chat",
+    "onCommand:vscodePi.newSession",
+    "onCommand:vscodePi.restartBackend"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "Pi can read, edit, and execute code in the active workspace."
+    },
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "Pi requires a filesystem-backed workspace and a local Pi executable in the workspace extension host."
+    }
+  },
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vscodePi",
+          "title": "Pi",
+          "icon": "media/pi.svg"
+        }
+      ]
+    },
+    "views": {
+      "vscodePi": [
+        {
+          "id": "vscodePi.chat",
+          "name": "Pi",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "vscodePi.newSession",
+        "title": "Pi: New Session",
+        "icon": "$(add)"
+      },
+      {
+        "command": "vscodePi.restartBackend",
+        "title": "Pi: Restart Backend",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "vscodePi.abort",
+        "title": "Pi: Stop Current Turn",
+        "icon": "$(debug-stop)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "vscodePi.newSession",
+          "when": "view == vscodePi.chat",
+          "group": "navigation@1"
+        },
+        {
+          "command": "vscodePi.restartBackend",
+          "when": "view == vscodePi.chat",
+          "group": "navigation@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Pi",
+      "properties": {
+        "vscodePi.executablePath": {
+          "type": "string",
+          "default": "pi",
+          "description": "Pi executable available in the workspace extension host. With Remote-SSH, this path is resolved on the remote host."
+        },
+        "vscodePi.additionalArguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Additional arguments passed to Pi before --mode rpc."
+        },
+        "vscodePi.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Start the Pi RPC backend when the Pi view opens."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "compile": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "check-types": "tsc --noEmit",
+    "test": "tsx --test test/**/*.test.ts",
+    "check": "npm run check-types && npm test && npm run compile",
+    "vscode:prepublish": "npm run check",
+    "vsce:package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.100.0",
+    "@vscode/vsce": "^3.6.0",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}
