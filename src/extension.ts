@@ -11,6 +11,9 @@ export function activate(context: vscode.ExtensionContext): void {
 		vscode.window.registerWebviewViewProvider(PiViewProvider.viewType, provider, {
 			webviewOptions: { retainContextWhenHidden: true },
 		}),
+		vscode.commands.registerCommand("vscodePi.open", () =>
+			vscode.commands.executeCommand("workbench.view.extension.vscodePi"),
+		),
 		vscode.commands.registerCommand("vscodePi.newSession", () => provider.newSession()),
 		vscode.commands.registerCommand("vscodePi.restartBackend", () => provider.restart()),
 		vscode.commands.registerCommand("vscodePi.abort", () => provider.abort()),

@@ -2,7 +2,7 @@
   "name": "vscode-pi",
   "displayName": "Pi",
   "description": "A native VS Code frontend for the Pi coding agent.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "license": "MIT",
   "publisher": "sounkou-bioinfo",
@@ -33,6 +33,7 @@
   ],
   "activationEvents": [
     "onView:vscodePi.chat",
+    "onCommand:vscodePi.open",
     "onCommand:vscodePi.newSession",
     "onCommand:vscodePi.restartBackend"
   ],
@@ -66,6 +67,10 @@
       ]
     },
     "commands": [
+      {
+        "command": "vscodePi.open",
+        "title": "Pi: Open"
+      },
       {
         "command": "vscodePi.newSession",
         "title": "Pi: New Session",
@@ -130,7 +135,7 @@
     "check:readme": "node scripts/render-readme.mjs --check",
     "check": "npm run check-types && npm test && npm run check:readme && npm run compile",
     "vscode:prepublish": "npm run check",
-    "vsce:package": "vsce package --no-dependencies"
+    "vsce:package": "vsce package --no-dependencies --out vscode-pi.vsix"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

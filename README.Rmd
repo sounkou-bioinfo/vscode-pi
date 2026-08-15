@@ -38,10 +38,10 @@ git clone https://github.com/sounkou-bioinfo/vscode-pi
 cd vscode-pi
 npm ci
 npm run vsce:package
-code --install-extension vscode-pi-0.0.1.vsix --force
+code --install-extension vscode-pi.vsix --force
 ```
 
-For Remote-SSH, run these commands in the remote VS Code terminal so the workspace extension is installed on the SSH host. Then run **Developer: Reload Window** and open the **Pi** Activity Bar view.
+For Remote-SSH, run these commands in the remote VS Code terminal so the workspace extension is installed on the SSH host. Then run **Developer: Reload Window**, open the Command Palette, and run **Pi: Open**. The same view is available from the **Pi** Activity Bar icon when that container is visible.
 
 ## Development
 
