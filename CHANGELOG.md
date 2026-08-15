@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Make `README.Rmd` authoritative and document source/VSIX installation, including Remote-SSH placement and window reload.
+
 ## 0.0.1
 
 - Add the initial Remote-SSH-aware VS Code workspace extension scaffold.
