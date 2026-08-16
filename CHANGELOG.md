@@ -1,13 +1,18 @@
 # Changelog
 
-## Unreleased
+## 0.1.0
 
-- Add **Pi: Open** so the sidebar can be revealed even when its Activity Bar container is hidden, and package to the stable `vscode-pi.vsix` filename.
-- Make `README.Rmd` authoritative and document source/VSIX installation, including Remote-SSH placement and window reload.
+- Pivot from an RPC sidebar to a local companion for Pi's existing terminal TUI.
+- Add local clipboard-image transfer into local, WSL, Remote-SSH, and Dev Container terminals.
+- Add local microphone capture and transcription using the official `pi-transcribe` capture/runtime stack.
+- Insert image paths and transcripts without submitting terminal input.
+- Run as a VS Code UI extension so local devices remain available in remote windows.
+
+## 0.0.2
+
+- Add `Pi: Open` and a stable `vscode-pi.vsix` package name.
+- Document source and Remote-SSH installation.
 
 ## 0.0.1
 
-- Add the initial Remote-SSH-aware VS Code workspace extension scaffold.
-- Launch Pi in JSONL RPC mode and stream assistant text and tool lifecycle events into a CSP-restricted sidebar.
-- Add abort, new-session, backend restart, bounded protocol parsing, extension UI bridging, tests, CI, and VSIX packaging.
-- Document the planned local dictation companion and optional VS Code Chat participant adapter.
+- Initial experimental Pi RPC sidebar.

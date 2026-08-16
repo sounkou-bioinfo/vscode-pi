@@ -1,8 +1,8 @@
 {
   "name": "vscode-pi",
-  "displayName": "Pi",
-  "description": "A native VS Code frontend for the Pi coding agent.",
-  "version": "0.0.2",
+  "displayName": "Pi TUI Companion",
+  "description": "Bridge the local clipboard and microphone into Pi running in a VS Code terminal, including WSL, Remote-SSH, and Dev Containers.",
+  "version": "0.1.0",
   "private": true,
   "license": "MIT",
   "publisher": "sounkou-bioinfo",
@@ -15,112 +15,122 @@
     "url": "https://github.com/sounkou-bioinfo/vscode-pi/issues"
   },
   "engines": {
-    "vscode": "^1.100.0"
+    "vscode": "^1.109.0"
   },
   "categories": [
-    "AI",
     "Other"
   ],
   "keywords": [
     "pi",
     "coding-agent",
-    "agent",
-    "remote-ssh"
+    "terminal",
+    "dictation",
+    "clipboard",
+    "remote-ssh",
+    "wsl"
   ],
   "main": "./dist/extension.js",
   "extensionKind": [
-    "workspace"
+    "ui"
   ],
   "activationEvents": [
-    "onView:vscodePi.chat",
-    "onCommand:vscodePi.open",
-    "onCommand:vscodePi.newSession",
-    "onCommand:vscodePi.restartBackend"
+    "onCommand:vscodePi.pasteImageIntoTerminal",
+    "onCommand:vscodePi.toggleDictation",
+    "onCommand:vscodePi.selectMicrophone",
+    "onCommand:vscodePi.configureDictationModel"
   ],
   "capabilities": {
     "untrustedWorkspaces": {
-      "supported": false,
-      "description": "Pi can read, edit, and execute code in the active workspace."
+      "supported": true
     },
     "virtualWorkspaces": {
       "supported": false,
-      "description": "Pi requires a filesystem-backed workspace and a local Pi executable in the workspace extension host."
+      "description": "Remote image transfer requires a filesystem-backed remote folder."
     }
   },
   "contributes": {
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "vscodePi",
-          "title": "Pi",
-          "icon": "media/pi.svg"
-        }
-      ]
-    },
-    "views": {
-      "vscodePi": [
-        {
-          "id": "vscodePi.chat",
-          "name": "Pi",
-          "type": "webview"
-        }
-      ]
-    },
     "commands": [
       {
-        "command": "vscodePi.open",
-        "title": "Pi: Open"
+        "command": "vscodePi.pasteImageIntoTerminal",
+        "title": "Pi: Paste Clipboard Image into Terminal",
+        "icon": "$(file-media)"
       },
       {
-        "command": "vscodePi.newSession",
-        "title": "Pi: New Session",
-        "icon": "$(add)"
+        "command": "vscodePi.toggleDictation",
+        "title": "Pi: Start/Stop Dictation",
+        "icon": "$(mic)"
       },
       {
-        "command": "vscodePi.restartBackend",
-        "title": "Pi: Restart Backend",
-        "icon": "$(refresh)"
+        "command": "vscodePi.selectMicrophone",
+        "title": "Pi: Select Dictation Microphone"
       },
       {
-        "command": "vscodePi.abort",
-        "title": "Pi: Stop Current Turn",
-        "icon": "$(debug-stop)"
+        "command": "vscodePi.configureDictationModel",
+        "title": "Pi: Configure Dictation Model"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "vscodePi.pasteImageIntoTerminal",
+        "key": "ctrl+alt+v",
+        "mac": "cmd+alt+v",
+        "when": "terminalFocus"
+      },
+      {
+        "command": "vscodePi.toggleDictation",
+        "key": "ctrl+alt+z",
+        "mac": "cmd+alt+z",
+        "when": "terminalFocus"
       }
     ],
     "menus": {
-      "view/title": [
+      "terminal/context": [
         {
-          "command": "vscodePi.newSession",
-          "when": "view == vscodePi.chat",
-          "group": "navigation@1"
+          "command": "vscodePi.pasteImageIntoTerminal",
+          "group": "navigation@10"
         },
         {
-          "command": "vscodePi.restartBackend",
-          "when": "view == vscodePi.chat",
-          "group": "navigation@2"
+          "command": "vscodePi.toggleDictation",
+          "group": "navigation@11"
         }
       ]
     },
     "configuration": {
-      "title": "Pi",
+      "title": "Pi TUI Companion",
       "properties": {
-        "vscodePi.executablePath": {
+        "vscodePi.dictation.modelPath": {
           "type": "string",
-          "default": "pi",
-          "description": "Pi executable available in the workspace extension host. With Remote-SSH, this path is resolved on the remote host."
+          "default": "",
+          "scope": "window",
+          "description": "Local path to a transcribe.cpp GGUF model. Leave empty to reuse local pi-transcribe settings or choose/download a model on first use."
         },
-        "vscodePi.additionalArguments": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [],
-          "description": "Additional arguments passed to Pi before --mode rpc."
+        "vscodePi.dictation.language": {
+          "type": "string",
+          "default": "en",
+          "scope": "window",
+          "description": "Language code passed to the local transcription model. Use an empty value for model-driven language detection."
         },
-        "vscodePi.autoStart": {
-          "type": "boolean",
-          "default": true,
-          "description": "Start the Pi RPC backend when the Pi view opens."
+        "vscodePi.dictation.microphone": {
+          "type": "string",
+          "default": "",
+          "scope": "window",
+          "description": "Exact local microphone name. Leave empty for the system default, or run Pi: Select Dictation Microphone."
+        },
+        "vscodePi.dictation.microphoneOccurrence": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "multipleOf": 1,
+          "scope": "window",
+          "description": "Zero-based occurrence used when multiple local microphones have the same name."
+        },
+        "vscodePi.dictation.maxRecordingSeconds": {
+          "type": "number",
+          "default": 300,
+          "minimum": 10,
+          "maximum": 1800,
+          "scope": "window",
+          "description": "Maximum duration of one local dictation recording."
         }
       }
     }
@@ -135,11 +145,16 @@
     "check:readme": "node scripts/render-readme.mjs --check",
     "check": "npm run check-types && npm test && npm run check:readme && npm run compile",
     "vscode:prepublish": "npm run check",
-    "vsce:package": "vsce package --no-dependencies --out vscode-pi.vsix"
+    "vsce:package": "node scripts/package.mjs"
+  },
+  "dependencies": {
+    "@picovoice/pvrecorder-node": "1.2.9",
+    "transcribe-cpp": "0.1.3"
   },
   "devDependencies": {
+    "@earendil-works/pi-transcribe": "https://github.com/earendil-works/pi-transcribe/archive/45924bd491e5ee2655d4269aa504eab11e27a424.tar.gz",
     "@types/node": "^22.0.0",
-    "@types/vscode": "^1.100.0",
+    "@types/vscode": "^1.109.0",
     "@vscode/vsce": "^3.6.0",
     "esbuild": "^0.25.0",
     "tsx": "^4.20.0",
