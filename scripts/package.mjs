@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { createRequire } from "node:module";
 
 const supportedTargets = new Set([
   "win32-x64",
@@ -13,10 +14,11 @@ if (!supportedTargets.has(target)) {
   process.exit(1);
 }
 
-const executable = process.platform === "win32" ? "vsce.cmd" : "vsce";
+const require = createRequire(import.meta.url);
+const executable = require.resolve("@vscode/vsce/vsce");
 const result = spawnSync(
-  executable,
-  ["package", "--target", target, "--out", "vscode-pi.vsix"],
+  process.execPath,
+  [executable, "package", "--target", target, "--out", "vscode-pi.vsix"],
   { stdio: "inherit" },
 );
 if (result.error) throw result.error;
