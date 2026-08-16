@@ -38,24 +38,21 @@ There is no Pi RPC backend, webview, session database, or alternative conversati
 
 ## Install
 
-The extension is not yet on the VS Code Marketplace. Install the Windows build from **Windows PowerShell**, not a WSL or Remote-SSH terminal:
+The extension is not yet on the VS Code Marketplace. Install the Windows build from **Windows Command Prompt or PowerShell**, not a WSL or Remote-SSH terminal:
 
-```powershell
-Invoke-WebRequest `
-  https://github.com/sounkou-bioinfo/vscode-pi/releases/latest/download/vscode-pi-win32-x64.vsix `
-  -OutFile vscode-pi-win32-x64.vsix
-code --install-extension .\vscode-pi-win32-x64.vsix --force
+```bat
+curl.exe -fL "https://github.com/sounkou-bioinfo/vscode-pi/releases/latest/download/vscode-pi-win32-x64.vsix" -o vscode-pi-win32-x64.vsix
+code --install-extension vscode-pi-win32-x64.vsix --force
 ```
 
-To build from source, run the following on the machine that displays VS Code. Native dictation dependencies make the resulting VSIX platform-specific.
+To build from source, run the following on the machine that displays VS Code. Native dictation dependencies make the resulting VSIX platform-specific. Node.js 22+ is required.
 
-```powershell
-# Node.js 22+ is required for the build.
+```bat
 git clone https://github.com/sounkou-bioinfo/vscode-pi
 cd vscode-pi
 npm ci
 npm run vsce:package
-code --install-extension .\vscode-pi.vsix --force
+code --install-extension vscode-pi.vsix --force
 ```
 
 Then run **Developer: Reload Window**. In a remote window, **Developer: Show Running Extensions** should list **Pi TUI Companion** under local extensions.
