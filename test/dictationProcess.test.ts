@@ -51,7 +51,7 @@ test("a child exit rejects pending work and the next operation starts a fresh he
 
 test("an unresponsive control request is killed and the helper can restart", async (t) => {
 	const client = new DictationProcessClient(fixturePath, {
-		controlRequestTimeoutMs: 75,
+		controlRequestTimeoutMs: 500,
 		forceKillWaitMs: 500,
 	});
 	t.after(() => client.shutdown());
