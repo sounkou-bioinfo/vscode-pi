@@ -56,8 +56,12 @@ class LocalTranscriptionBackend {
 	}
 
 	private async load(): Promise<TranscribeModelInstance> {
+		console.error("Pi dictation helper: loading transcription runtime");
 		const { TranscribeModel } = await import("transcribe-cpp");
-		const model = await TranscribeModel.load(this.modelPath);
+		const backend = process.platform === "win32" ? "cpu" : "auto";
+		console.error(`Pi dictation helper: loading model with ${backend} backend`);
+		const model = await TranscribeModel.load(this.modelPath, { backend });
+		console.error("Pi dictation helper: transcription model ready");
 		if (this.language && !model.capabilities.languages.includes(this.language)) {
 			model.dispose();
 			throw new Error(`The selected model does not support language ${this.language}`);
@@ -86,6 +90,7 @@ class NativeDictationService {
 		if (this.active) throw new Error("Microphone capture is already active");
 		const capture = new MicrophoneCapture(request.params.microphone);
 		capture.start();
+		console.error("Pi dictation helper: microphone capture started");
 
 		const backend = new LocalTranscriptionBackend(
 			request.params.modelPath,

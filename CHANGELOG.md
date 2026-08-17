@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- Select the CPU transcription backend on Windows and omit the optional Vulkan module after a real Remote-SSH smoke test exposed a native `0xC0000005` access violation immediately after capture while automatic model initialization began.
+- Preserve native-helper phase diagnostics so any remaining process crash identifies whether capture, runtime loading, or model loading was active.
+
 ## 0.1.1
 
 - Isolate native microphone capture, model loading, and transcription in a local helper process so failures cannot terminate VS Code's UI extension host or its Remote-SSH connection.

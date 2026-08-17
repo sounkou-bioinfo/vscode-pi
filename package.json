@@ -2,7 +2,7 @@
   "name": "vscode-pi",
   "displayName": "Pi TUI Companion",
   "description": "Bridge the local clipboard and microphone into Pi running in a VS Code terminal, including WSL, Remote-SSH, and Dev Containers.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "license": "MIT",
   "publisher": "sounkou-bioinfo",

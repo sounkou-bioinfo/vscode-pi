@@ -37,7 +37,7 @@ The child is launched with the VS Code/Electron executable in Node mode (`ELECTR
 
 ## Native packaging
 
-The build emits `dist/extension.js` and a separate bundled `dist/dictationHelper.js`. The official `pi-transcribe` deep import is compiled into the helper. Platform-native `@picovoice/pvrecorder-node` and `transcribe-cpp` remain external so their packaged native artifacts resolve normally. A VSIX must therefore be built on/for the desktop target platform. CI checks portable TypeScript on Linux and packages the distributable on `windows-latest`.
+The build emits `dist/extension.js` and a separate bundled `dist/dictationHelper.js`. The official `pi-transcribe` deep import is compiled into the helper. Platform-native `@picovoice/pvrecorder-node` and `transcribe-cpp` remain external so their packaged native artifacts resolve normally. The Windows helper explicitly selects the CPU backend, and the Windows VSIX omits `ggml-vulkan.dll`; this avoids the Vulkan initialization path implicated by a native access violation during a real Remote-SSH smoke test. A VSIX must therefore be built on/for the desktop target platform. CI checks portable TypeScript on Linux and packages the distributable on `windows-latest`.
 
 ## Non-goals
 

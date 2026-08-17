@@ -5,6 +5,7 @@ docs/**
 scripts/**
 src/**
 test/**
+node_modules/@transcribe-cpp/win32-x64-cpu-vulkan/ggml-vulkan.dll
 .gitignore
 README.Rmd
 tsconfig.json

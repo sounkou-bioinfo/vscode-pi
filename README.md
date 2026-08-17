@@ -81,7 +81,7 @@ Pi already supports image clipboard access by itself when Pi and the clipboard a
 3. Speak, then press `Ctrl+Alt+Z` again.
 4. The transcript is inserted into Pi's editor without being submitted.
 
-Capture uses the official [`pi-transcribe`](https://github.com/earendil-works/pi-transcribe) `MicrophoneCapture` implementation and its `transcribe-cpp` runtime. Microphone access, model loading, PCM, transcription, and native disposal stay in an isolated local child process; only transcript text reaches WSL or the remote machine. If a native process crashes, pending work is rejected, recording status is cleared, and the next operation starts a fresh helper. Cancellation and extension shutdown force-terminate a helper that does not exit within bounded grace periods.
+Capture uses the official [`pi-transcribe`](https://github.com/earendil-works/pi-transcribe) `MicrophoneCapture` implementation and its `transcribe-cpp` runtime. Microphone access, model loading, PCM, transcription, and native disposal stay in an isolated local child process; only transcript text reaches WSL or the remote machine. If a native process crashes, pending work is rejected, recording status is cleared, and the next operation starts a fresh helper. Cancellation and extension shutdown force-terminate a helper that does not exit within bounded grace periods. The Windows build selects the CPU backend and omits the optional Vulkan module because driver initialization can terminate the native helper instead of returning an error.
 
 On first use, the extension tries the local `~/.pi/agent/pi-transcribe.json`. If no usable local configuration exists, choose either:
 
