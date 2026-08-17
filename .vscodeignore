@@ -1,4 +1,5 @@
 .github/**
+.pi/**
 .vscode/**
 docs/**
 scripts/**

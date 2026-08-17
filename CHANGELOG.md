@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Isolate native microphone capture, model loading, and transcription in a local helper process so failures cannot terminate VS Code's UI extension host or its Remote-SSH connection.
+- Recover cleanly from helper crashes and hangs, with bounded cancellation, shutdown, and control-request timeouts.
+- Add non-native IPC regression tests for serialization, crash recovery, timeout recovery, and forced shutdown.
+
 ## 0.1.0
 
 - Pivot from an RPC sidebar to a local companion for Pi's existing terminal TUI.

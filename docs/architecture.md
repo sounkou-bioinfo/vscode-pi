@@ -4,7 +4,7 @@
 
 ## Execution location
 
-The extension is `extensionKind: ["ui"]` and therefore runs on the desktop machine in a normal VS Code Remote window. This is required for the local clipboard, microphone, and native transcription libraries.
+The extension is `extensionKind: ["ui"]` and therefore runs on the desktop machine in a normal VS Code Remote window. The UI extension owns clipboard access, status/model UI, and terminal insertion. It spawns a second process on that same desktop machine for microphone and transcription work; native addons are never loaded into the VS Code extension host.
 
 Pi itself continues to run in the integrated terminal's environment:
 
@@ -26,17 +26,18 @@ A WSL target means a Remote - WSL window. A `wsl.exe` profile in a local window 
 
 ## Dictation path
 
-1. `Ctrl+Alt+Z` starts official `pi-transcribe` microphone capture in the local extension host.
-2. The selected transcribe.cpp GGUF model is prepared concurrently.
-3. A second invocation stops capture and transcribes 16 kHz mono PCM locally.
-4. Control characters and line breaks are removed from the transcript.
-5. `Terminal.sendText(transcript, false)` inserts text into the same terminal that was focused when recording began.
+1. `Ctrl+Alt+Z` resolves the local model in the UI extension and sends a validated request to a local child process.
+2. The child resolves the configured exact microphone name/occurrence, starts official `pi-transcribe` capture, and preloads the transcribe.cpp GGUF model while recording.
+3. A second invocation asks the child to stop capture and transcribe its 16 kHz mono PCM. PCM never crosses IPC.
+4. The UI extension validates the response, removes control characters and line breaks from the transcript, and calls `Terminal.sendText(transcript, false)` for the terminal that was focused when recording began.
 
-No PCM or model data is sent to the workspace host.
+Requests are serialized. A child error or exit rejects pending work, clears recording state/status, and permits a fresh helper on the next operation. Cancellation aborts transcription and force-terminates an unresponsive child after a bounded grace period. Extension shutdown first requests native cleanup, then force-kills the helper on a bounded timer. The helper also cleans up or exits if its parent IPC channel disappears.
+
+The child is launched with the VS Code/Electron executable in Node mode (`ELECTRON_RUN_AS_NODE=1`), without inherited extension-host `execArgv`, and with its Windows console hidden. PCM buffers and loaded model state remain in the helper, and no audio or model data is sent to the workspace host; only device names, model configuration, control messages, and the final transcript cross local IPC.
 
 ## Native packaging
 
-`pi-transcribe` depends on platform-native `pvrecorder` and `transcribe-cpp` artifacts. A VSIX must therefore be built on/for the desktop target platform. CI checks portable TypeScript on Linux and packages the distributable on `windows-latest`.
+The build emits `dist/extension.js` and a separate bundled `dist/dictationHelper.js`. The official `pi-transcribe` deep import is compiled into the helper. Platform-native `@picovoice/pvrecorder-node` and `transcribe-cpp` remain external so their packaged native artifacts resolve normally. A VSIX must therefore be built on/for the desktop target platform. CI checks portable TypeScript on Linux and packages the distributable on `windows-latest`.
 
 ## Non-goals
 

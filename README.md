@@ -22,8 +22,10 @@ Neither command presses Enter. You can inspect or edit the inserted path/transcr
 ```text
 Windows VS Code UI extension
   ├─ reads the Windows image clipboard
-  ├─ records the Windows microphone
-  └─ transcribes with the pi-transcribe engine
+  ├─ owns status/model UI and terminal insertion
+  └─ validated IPC ──► local dictation helper process
+                         ├─ records the Windows microphone
+                         └─ loads/transcribes with native addons
                  │
                  │ VS Code filesystem + terminal APIs
                  ▼
@@ -32,7 +34,7 @@ Pi TUI in local / WSL / SSH / container terminal
   └─ receives transcript text
 ```
 
-The extension declares `extensionKind: ["ui"]`, so attached devices and the clipboard are accessed on the machine displaying VS Code. VS Code's remote filesystem provider writes clipboard images to `/tmp` on the workspace host. `Terminal.sendText(..., false)` inserts the resulting path or transcript into the active terminal without submitting it.
+The extension declares `extensionKind: ["ui"]`, so attached devices and the clipboard are accessed on the machine displaying VS Code. Native dictation runs in a separate process on that same machine and is not loaded into the VS Code extension host. VS Code's remote filesystem provider writes clipboard images to `/tmp` on the workspace host. `Terminal.sendText(..., false)` inserts the resulting path or transcript into the active terminal without submitting it.
 
 There is no Pi RPC backend, webview, session database, or alternative conversation UI.
 
@@ -79,7 +81,7 @@ Pi already supports image clipboard access by itself when Pi and the clipboard a
 3. Speak, then press `Ctrl+Alt+Z` again.
 4. The transcript is inserted into Pi's editor without being submitted.
 
-Capture uses the official [`pi-transcribe`](https://github.com/earendil-works/pi-transcribe) `MicrophoneCapture` implementation and its `transcribe-cpp` runtime. Audio, model loading, and transcription stay in the local VS Code extension host; only transcript text reaches WSL or the remote machine.
+Capture uses the official [`pi-transcribe`](https://github.com/earendil-works/pi-transcribe) `MicrophoneCapture` implementation and its `transcribe-cpp` runtime. Microphone access, model loading, PCM, transcription, and native disposal stay in an isolated local child process; only transcript text reaches WSL or the remote machine. If a native process crashes, pending work is rejected, recording status is cleared, and the next operation starts a fresh helper. Cancellation and extension shutdown force-terminate a helper that does not exit within bounded grace periods.
 
 On first use, the extension tries the local `~/.pi/agent/pi-transcribe.json`. If no usable local configuration exists, choose either:
 

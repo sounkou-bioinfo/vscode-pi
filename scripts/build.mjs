@@ -4,8 +4,11 @@ import { build, context } from "esbuild";
 const watch = process.argv.includes("--watch");
 rmSync("dist", { recursive: true, force: true });
 const options = {
-  entryPoints: ["src/extension.ts"],
-  outfile: "dist/extension.js",
+  entryPoints: {
+    extension: "src/extension.ts",
+    dictationHelper: "src/dictationHelper.ts",
+  },
+  outdir: "dist",
   bundle: true,
   format: "cjs",
   platform: "node",
